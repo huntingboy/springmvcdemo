@@ -5,15 +5,19 @@ import com.nomad.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 
 @Controller
-@RequestMapping("/users")
+//@RequestMapping("/users")
 public class UserController {
     private UserRepository userRepository;
+
+    public UserController() {
+    }
 
     @Autowired
     public UserController(UserRepository userRepository) {
@@ -36,8 +40,28 @@ public class UserController {
     //替代版本
     //处理器方法返回对象或集合时，值会放到模型Model中,从而放到视图中，模型的key根据类型自动推出
     // 逻辑试图名称根据请求路径推出，即users
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value = "/users", method = RequestMethod.GET)
     public List<User> users() {
         return userRepository.findUsers(Long.MAX_VALUE, 20);
+    }
+
+    @RequestMapping(value = "/register", method = RequestMethod.GET)
+    public String showRegistrationForm() {
+        return "registerForm";
+    }
+
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    public String processRegistration(User user) {
+        userRepository.save(user);
+        return "redirect:/user/" + user.getUsername();
+    }
+
+    @RequestMapping(value = "/user/${username}", method = RequestMethod.GET)
+    public String showUserProfile(
+            @PathVariable String username, Model model
+    ) {
+        User user = userRepository.findUserByName(username);
+        model.addAttribute(user);
+        return "profile";
     }
 }

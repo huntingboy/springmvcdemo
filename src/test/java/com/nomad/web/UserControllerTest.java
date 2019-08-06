@@ -10,11 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
 public class UserControllerTest {
@@ -47,5 +46,33 @@ public class UserControllerTest {
             users.add(new User("user" + i, 'm', 20));
         }
         return users;
+    }
+
+    @Test
+    public void shouldShowRegistration() throws Exception {
+        UserController controller = new UserController();
+        MockMvc mockMvc = standaloneSetup(controller).build();
+
+        mockMvc.perform(get("/register"))
+                .andExpect(view().name("registerForm"));
+    }
+
+    @Test
+    public void shouldProcessRegistration() throws Exception {
+        UserRepository mockRepository = mock(UserRepository.class);
+        User unsaved = new User("zhangsan", 'm', 20);
+        User saved = new User(1L, "zhangsan", 'm', 20);
+        when(mockRepository.save(unsaved)).thenReturn(saved);
+
+        UserController controller = new UserController(mockRepository);
+        MockMvc mockMvc = standaloneSetup(controller).build();
+
+        mockMvc.perform(post("/register")
+                .param("username", "zhangsan")
+                .param("sex", "m")
+                .param("age", "20"))
+                .andExpect(redirectedUrl("/user/zhangsan"));
+
+        verify(mockRepository, atLeastOnce()).save(unsaved);
     }
 }

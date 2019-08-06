@@ -8,4 +8,8 @@ import java.util.List;
 public interface UserRepository {
 
     List<User> findUsers(long max, int count);
+
+    User save(User unsaved);
+
+    User findUserByName(String username);
 }

@@ -14,6 +14,16 @@ public class UserRepositoryImpl implements UserRepository {
         return createUserList(count);
     }
 
+    @Override
+    public User save(User unsaved) {
+        return unsaved;
+    }
+
+    @Override
+    public User findUserByName(String username) {
+        return null;
+    }
+
     private List<User> createUserList(int count) {
         List<User> users = new ArrayList<>();
         for (int i = 0; i < count; i++) {
