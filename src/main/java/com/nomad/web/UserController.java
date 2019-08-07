@@ -5,10 +5,12 @@ import com.nomad.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -50,13 +52,28 @@ public class UserController {
         return "registerForm";
     }
 
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
-    public String processRegistration(User user) {
+    @RequestMapping(value = "/register1", method = RequestMethod.GET)
+    public String showRegistrationForm(Model model) {
+        model.addAttribute(new User());
+        return "registerForm1";
+    }
+
+    //1.调用User()构造器，setter方法把表单字段填充到对象
+    //2.校验User输入，但不会阻止表单提交
+    //3.Errors参数要跟在@valid注解的参数后面
+    @RequestMapping(value = {"/register", "/register1"}, method = RequestMethod.POST)
+    public String processRegistration(
+            @Valid User user,
+            Errors errors) {
+        if (errors.hasErrors()) {
+            return "registerForm1";
+        }
+
         userRepository.save(user);
         return "redirect:/user/" + user.getUsername();
     }
 
-    @RequestMapping(value = "/user/${username}", method = RequestMethod.GET)
+    @RequestMapping(value = "/user/{username}", method = RequestMethod.GET)
     public String showUserProfile(
             @PathVariable String username, Model model
     ) {

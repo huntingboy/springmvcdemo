@@ -11,8 +11,8 @@
             <c:out value="${user.username}"/>
         </div>
         <div>
-            <span class="userSex"><c:out value="${user.sex}"/></span>
-            <span class="userAge"><c:out value="${user.age}" /></span>
+            <span class="userSex"><c:out value="${user.sex}"/></span> <br>
+            <span class="userAge"><c:out value="${user.age}" /></span> <br>
         </div>
     </li>
 </c:forEach>

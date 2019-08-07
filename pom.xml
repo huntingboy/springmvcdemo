@@ -68,6 +68,14 @@
             <scope>test</scope>
         </dependency>
 
+        <!--实体字段合法性校验-->
+        <!-- https://mvnrepository.com/artifact/javax.validation/validation-api -->
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>2.0.1.Final</version>
+        </dependency>
+
     </dependencies>
 
 </project>
