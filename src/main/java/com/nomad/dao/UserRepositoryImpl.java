@@ -15,7 +15,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     static {
         for (int i = 0; i < 100; i++) {
-            users.put("user" + i, new User("user" + i, 'm', 20));
+            users.put("user" + i, new User("user" + i, "m", 20));
         }
     }
 

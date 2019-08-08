@@ -3,23 +3,22 @@ package com.nomad.domain;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
 public class User {
 
     private final Long id;
 
-    @NotNull
+    @NotBlank(message = "username.notblank")
     @Size(min = 5, max = 16, message = "username.size")
     private String username;
 
-    @NotNull
+    @NotBlank(message = "sex.notblank")
     @Size(min = 1, max = 1, message = "sex.size")
-    private char sex;
+    private String sex;
 
-    @NotNull
-    @Size(min = 10,max = 70, message = "age.valid")
+    @Min(value = 10, message = "age.min")
+    @Max(value = 70, message = "age.max")
     private int age;
 
 
@@ -27,14 +26,14 @@ public class User {
         this.id = null;
     }
 
-    public User(String username, char sex, int age) {
+    public User(String username, String sex, int age) {
         this.id = null;
         this.username = username;
         this.sex = sex;
         this.age = age;
     }
 
-    public User(long id, String username, char sex, int age) {
+    public User(long id, String username, String sex, int age) {
         this.id = id;
         this.username = username;
         this.sex = sex;
@@ -49,7 +48,7 @@ public class User {
         return username;
     }
 
-    public char getSex() {
+    public String getSex() {
         return sex;
     }
 
@@ -61,7 +60,7 @@ public class User {
         this.username = username;
     }
 
-    public void setSex(char sex) {
+    public void setSex(String sex) {
         this.sex = sex;
     }
 

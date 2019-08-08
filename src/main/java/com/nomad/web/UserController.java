@@ -6,17 +6,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.portlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @Controller
 //@RequestMapping("/users")
 public class UserController {
-    private UserRepository userRepository;
+    private UserRepository userRepository;//用于获取项目实际路径以保存上传文件
+    @Autowired
+    private HttpServletRequest request;
+
 
     public UserController() {
     }
@@ -61,11 +71,32 @@ public class UserController {
     //1.调用User()构造器，setter方法把表单字段填充到对象
     //2.校验User输入，但不会阻止表单提交
     //3.Errors参数要跟在@valid注解的参数后面
-    @RequestMapping(value = {"/register", "/register1"}, method = RequestMethod.POST)
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
     public String processRegistration(
             @Valid User user,
             Errors errors) {
         if (errors.hasErrors()) {
+            List<ObjectError> errorList = errors.getAllErrors();
+            for (ObjectError error :
+                    errorList) {
+                System.out.println(error.getDefaultMessage());
+            }
+            return "registerForm";
+        }
+
+        userRepository.save(user);
+        return "redirect:/user/" + user.getUsername();
+    }
+    @RequestMapping(value = "/register1", method = RequestMethod.POST)
+    public String processRegistration1(
+            @Valid User user,
+            Errors errors) {
+        if (errors.hasErrors()) {
+            List<ObjectError> errorList = errors.getAllErrors();
+            for (ObjectError error :
+                    errorList) {
+                System.out.println(error.getDefaultMessage());
+            }
             return "registerForm1";
         }
 
@@ -80,5 +111,40 @@ public class UserController {
         User user = userRepository.findUserByName(username);
         model.addAttribute(user);
         return "profile";
+    }
+
+    @RequestMapping(value = "/upload", method = RequestMethod.GET)
+    public String upload() {
+        return "uploadFileForm";
+    }
+
+    @RequestMapping(value = "/upload", method = RequestMethod.POST)
+    public String processUpload(
+            @RequestPart("userPicture") MultipartFile file
+            ) {  //byte[] userPicture 后者 Part
+        if (!file.isEmpty()) {
+            File filePath = new File(request.getSession().getServletContext().getRealPath("/") + "/upload/");
+            if (!filePath.exists()) {
+                filePath.mkdirs();
+            }
+            try {
+                file.transferTo(new File(filePath.toString() + file.getOriginalFilename()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return "redirect:/list";
+    }
+
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    public String list() {
+        String filePath = request.getSession().getServletContext().getRealPath("/") + "/upload/";
+//        ModelAndView mav = new ModelAndView("fileList");
+        File uploadDest = new File(filePath);
+        String[] fileNames = uploadDest.list();
+        for (int i = 0; i < fileNames.length; i++) {
+            System.out.println(fileNames[i]);
+        }
+        return "fileList";
     }
 }

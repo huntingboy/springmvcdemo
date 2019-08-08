@@ -43,7 +43,7 @@ public class UserControllerTest {
     private List<User> createUserList(int count) {
         List<User> users = new ArrayList<>();
         for (int i = 0; i < count; i++) {
-            users.add(new User("user" + i, 'm', 20));
+            users.add(new User("user" + i, "m", 20));
         }
         return users;
     }
@@ -60,8 +60,8 @@ public class UserControllerTest {
     @Test
     public void shouldProcessRegistration() throws Exception {
         UserRepository mockRepository = mock(UserRepository.class);
-        User unsaved = new User("zhangsan", 'm', 20);
-        User saved = new User(1L, "zhangsan", 'm', 20);
+        User unsaved = new User("zhangsan", "m", 20);
+        User saved = new User(1L, "zhangsan", "m", 20);
         when(mockRepository.save(unsaved)).thenReturn(saved);
 
         UserController controller = new UserController(mockRepository);
