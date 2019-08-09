@@ -33,7 +33,7 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
     @Override
     protected void customizeRegistration(ServletRegistration.Dynamic registration) {
         super.customizeRegistration(registration);
-        registration.setMultipartConfig(
+        registration.setMultipartConfig(  //临时目录一定要存在，否则异常  
                 new MultipartConfigElement("/tmp/uploads/",
                         20971520, 41943040, 0)
         );

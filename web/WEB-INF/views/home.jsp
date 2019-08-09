@@ -16,6 +16,7 @@
     <a href="<c:url value="/register" />">Register</a> |
     <a href="<c:url value="/register1" />">Register1</a> |
     <a href="<c:url value="/upload" />">上传</a> <br>
+    <a href="<c:url value="/upload1" />">批量上传</a> <br>
      这里是body!
 </body>
 </html>

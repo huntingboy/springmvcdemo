@@ -87,6 +87,7 @@ public class UserController {
         userRepository.save(user);
         return "redirect:/user/" + user.getUsername();
     }
+
     @RequestMapping(value = "/register1", method = RequestMethod.POST)
     public String processRegistration1(
             @Valid User user,
@@ -118,19 +119,46 @@ public class UserController {
         return "uploadFileForm";
     }
 
+    @RequestMapping(value = "/upload1", method = RequestMethod.GET)
+    public String upload1() {
+        return "uploadFileForm1";
+    }
+
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
     public String processUpload(
             @RequestPart("userPicture") MultipartFile file
-            ) {  //byte[] userPicture 后者 Part
-        if (!file.isEmpty()) {
-            File filePath = new File(request.getSession().getServletContext().getRealPath("/") + "/upload/");
-            if (!filePath.exists()) {
-                filePath.mkdirs();
-            }
-            try {
-                file.transferTo(new File(filePath.toString() + file.getOriginalFilename()));
-            } catch (IOException e) {
-                e.printStackTrace();
+    ) {  //byte[] userPicture 后者 Part
+        String path = request.getSession().getServletContext().getRealPath("upload");
+        String fileName = file.getOriginalFilename();
+        File targetFile = new File(path, fileName); //不是new File(path+fileName) ，否则会保存在根目录，调试了好久。。。
+        if (!targetFile.exists()) {
+            targetFile.mkdirs();
+        }
+        try {
+            file.transferTo(targetFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "redirect:/list";
+    }
+
+    @RequestMapping(value = "/upload1", method = RequestMethod.POST)
+    public String processUpload1(
+            @RequestPart("userPictures") MultipartFile[] files
+    ) {
+        String path = request.getSession().getServletContext().getRealPath("upload");
+        File filePath = new File(path);
+        if (!filePath.exists()) {
+            filePath.mkdirs();
+        }
+        if (files != null && files.length > 0) {
+            for (MultipartFile file :
+                    files) {
+                try {
+                    file.transferTo(new File(path, file.getOriginalFilename()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
         return "redirect:/list";
