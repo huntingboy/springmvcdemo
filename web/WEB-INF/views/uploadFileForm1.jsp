@@ -5,10 +5,7 @@
 </head>
 <body>
 <form action="" method="post" enctype="multipart/form-data">
-    <input type="file" name="userPictures" />
-    <input type="file" name="userPictures" />
-    <input type="file" name="userPictures" />
-    <input type="file" name="userPictures" />
+    <input type="file" name="userPictures" multiple="multiple"/>
     <input type="submit" value="提交" />
 </form>
 </body>

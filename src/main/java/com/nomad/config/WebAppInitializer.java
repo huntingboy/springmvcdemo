@@ -4,6 +4,7 @@ import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatche
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.ServletRegistration;
+import java.io.File;
 
 //1.servlet3.0，容器会在类路径下查找ServletContainerInitializer实现类，用来配置servlet容器
 //2.ServletContainerInitializer ===》(实现) SpringServletContainerInitializer ==》(调用) WebApplicationInitializer的实现类
@@ -33,8 +34,13 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
     @Override
     protected void customizeRegistration(ServletRegistration.Dynamic registration) {
         super.customizeRegistration(registration);
+        String path = "/tmp/uploads";
+        File filePath = new File(path);
+        if (!filePath.exists()) {
+            filePath.mkdirs();
+        }
         registration.setMultipartConfig(  //临时目录一定要存在，否则异常  
-                new MultipartConfigElement("/tmp/uploads/",
+                new MultipartConfigElement(path,
                         20971520, 41943040, 0)
         );
     }

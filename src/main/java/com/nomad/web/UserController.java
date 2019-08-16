@@ -7,18 +7,16 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 //@RequestMapping("/users")
@@ -130,7 +128,8 @@ public class UserController {
     ) {  //byte[] userPicture 后者 Part
         String path = request.getSession().getServletContext().getRealPath("upload");
         String fileName = file.getOriginalFilename();
-        File targetFile = new File(path, fileName); //不是new File(path+fileName) ，否则会保存在根目录，调试了好久。。。
+        //保证上传后的文件名唯一，防止被覆盖
+        File targetFile = new File(path, UUID.randomUUID().toString() + fileName); //不是new File(path+fileName) ，否则会保存在根目录，调试了好久。。。
         if (!targetFile.exists()) {
             targetFile.mkdirs();
         }
@@ -165,14 +164,43 @@ public class UserController {
     }
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
-    public String list() {
+    public String list(Model model) {
         String filePath = request.getSession().getServletContext().getRealPath("/") + "/upload/";
 //        ModelAndView mav = new ModelAndView("fileList");
         File uploadDest = new File(filePath);
         String[] fileNames = uploadDest.list();
+        model.addAttribute("fileNames", fileNames);
         for (int i = 0; i < fileNames.length; i++) {
             System.out.println(fileNames[i]);
         }
         return "fileList";
+    }
+
+    @RequestMapping(value = "/download", method = RequestMethod.GET)
+    public String downloadFile(String fileName,
+                               HttpServletRequest request,
+                               HttpServletResponse response) {
+        response.setCharacterEncoding("utf-8");
+        response.setContentType("multipart/form-data");
+        response.setHeader("Content-Disposition", "attachment;filename=" +
+                fileName);
+
+        String path = request.getSession().getServletContext().getRealPath("upload");
+        try {
+            InputStream inputStream = new FileInputStream(new File(path, fileName));
+            OutputStream os = response.getOutputStream();
+            byte[] bytes = new byte[2048];
+            int length;
+            while ((length = inputStream.read(bytes)) > 0) {
+                os.write(bytes, 0, length);
+            }
+            os.close();
+            inputStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

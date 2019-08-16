@@ -1,16 +1,16 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: nomad
-  Date: 19-8-9
-  Time: 上午1:42
-  To change this template use File | Settings | File Templates.
---%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
     <title>显示上传文件</title>
 </head>
 <body>
- 上传文件成功
+ <h1>上传文件成功 !!</h1>
+ <h2>所有已上传文件：</h2>
+<c:forEach items="${fileNames}" var="fileName">
+    <li>
+        <a href="download?fileName=<c:out value="${fileName}"/>">${fileName}</a>
+    </li>
+</c:forEach>
 </body>
 </html>
